@@ -35,8 +35,8 @@ services:
 
     # Uncomment to change startup options
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: sevi
+      MONGO_INITDB_ROOT_PASSWORD: mongobili
     #   MONGO_INITDB_DATABASE: my-api/
 
     # Add "forwardPorts": ["27017"] to **devcontainer.json** to forward MongoDB locally.
