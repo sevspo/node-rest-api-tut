@@ -6,14 +6,19 @@ const path = require("path");
 const Post = require("../models/post");
 
 exports.getPosts = (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
   Post.find()
+    .countDocuments()
+    .then((count) => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
     .then((posts) => {
-      if (!posts) {
-        const error = new Error("posts not found");
-        error.statusCode = 404;
-        throw error;
-      }
-      res.status(200).json({ message: "posts fetched", posts });
+      res.status(200).json({ message: "posts fetched", posts, totalItems });
     })
     .catch((err) => {
       if (!err.statusCode) {
