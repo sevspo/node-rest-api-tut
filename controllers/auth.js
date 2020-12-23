@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
@@ -26,6 +26,51 @@ exports.signup = (req, res, next) => {
         message: "New User Created",
         userId: result._id,
       });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.login = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  let loadedUser;
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        const error = new Error("user not found");
+        error.statusCode = 404;
+        throw error;
+      }
+      loadedUser = user;
+      return bcrypt.compare(password, user.password);
+    })
+    .then((isEqual) => {
+      if (!isEqual) {
+        const error = new Error("Wrong Password");
+        error.statusCode = 401;
+        throw error;
+      }
+      // generate jwt tokens
+      // is the underscore syntax really necessary, => not anymore!
+      // console.log(loadedUser.id);
+      // console.log(loadedUser._id);
+      // console.log(loadedUser._id.toString());
+      const token = jwt.sign(
+        {
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          // userId: loadedUser._id.toString();
+        },
+        "supersecret",
+        { expiresIn: "1h" }
+      );
+      // console.log(token);
+      res.status(200).json({ token, userId: loadedUser.id });
     })
     .catch((err) => {
       if (!err.statusCode) {
