@@ -123,6 +123,11 @@ exports.updatePost = (req, res, next) => {
         error.statusCode = 422;
         throw error;
       }
+      if (post.creator === req.userId) {
+        const error = new Error("Not created by user");
+        error.statusCode = 403;
+        throw error;
+      }
       if (imageUrl !== post.imageUrl) {
         clearImage(post.imageUrl);
       }
@@ -160,14 +165,25 @@ exports.deletePost = (req, res, next) => {
         error.statusCode = 422;
         throw error;
       }
-      // check logged in user
+      if (post.creator === req.userId) {
+        const error = new Error("Not created by user");
+        error.statusCode = 403;
+        throw error;
+      }
       clearImage(post.imageUrl);
       return Post.findByIdAndRemove(postId);
     })
     .then((result) => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      // pull is a mongoose method
+      user.posts.pull(postId);
+      return user.save();
+    })
+    .then((result) => {
       res.status(200).json({
         message: "Post deleted successfully",
-        post: result,
       });
     })
     .catch((err) => {
