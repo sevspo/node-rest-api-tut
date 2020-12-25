@@ -6,7 +6,9 @@ const router = express.Router();
 
 const feedController = require("../controllers/feed");
 
-router.get("/posts", feedController.getPosts);
+const isAuth = require("../middleware/is-auth");
+
+router.get("/posts", isAuth, feedController.getPosts);
 
 router.post(
   "/post",
