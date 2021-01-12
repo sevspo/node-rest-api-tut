@@ -111,7 +111,7 @@ exports.updatePost = async (req, res, next) => {
   }
   try {
     // populate will populate the post with the data about the creator
-    const post = await (await Post.findById(postId)).populate("creator");
+    const post = await Post.findById(postId).populate("creator");
     if (!post) {
       const error = new Error("no post found");
       error.statusCode = 422;
@@ -153,8 +153,9 @@ const clearImage = (filePath) => {
 
 exports.deletePost = async (req, res, next) => {
   const postId = req.params.postId;
+  console.log(postId);
   try {
-    const post = await this.Post.findById(postId);
+    const post = await Post.findById(postId);
     if (!post) {
       const error = new Error("no post found");
       error.statusCode = 422;
@@ -171,7 +172,7 @@ exports.deletePost = async (req, res, next) => {
     // pull is a mongoose method
     user.posts.pull(postId);
     await user.save();
-    io.getIO().emit("post", { action: "delete", post: postId });
+    io.getIO().emit("posts", { action: "delete", post: postId });
     res.status(200).json({
       message: "Post deleted successfully",
     });
