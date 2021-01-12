@@ -18,7 +18,8 @@
     "mongodb.mongodb-vscode",
     "visualstudioexptteam.vscodeintellicode",
     "tabnine.tabnine-vscode",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "mutantdino.resourcemonitor"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

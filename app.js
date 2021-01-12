@@ -63,8 +63,17 @@ mongoose
     dbName: "messages",
   })
   .then((result) => {
-    // console.log(result);
-    app.listen(8080);
+    // const server = app.listen(8080);
+    const http = require("http").createServer(app);
+
+    const io = require("./socket").init(http);
+
+    // this cb will be called for every client that connects to socket io
+    io.on("connection", (socket) => {
+      console.log("client connected");
+    });
+
+    http.listen(8080);
   })
   .catch((err) => {
     console.log(err);
